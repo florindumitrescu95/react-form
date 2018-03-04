@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { Row, Grid, Col } from "react-bootstrap";
 import Dropdown from "./Dropdown/Dropdown";
-import UploadImage from "./UploadImage/UploadImage";
+// import UploadImage from "./UploadImage/UploadImage";
+import './App.css';
 
 const styles = {
   title: {
@@ -27,6 +28,19 @@ const wedges = {
 const Breed = ["doggo", "shiba", "husky"];
 const Temperments = ["agitat", "fumat", "melancolic"];
 const Options = ["Browse", "Something"];
+const Radiographs = [
+  { state: "preOpComment", image: "preOpPhoto", name: "Pre-op Radiopgraph*" },
+  {
+    state: "postOpComment",
+    image: "postOpPhoto",
+    name: "Post-op Radiopgraph*"
+  },
+  {
+    state: "followUpComment",
+    image: "followUpPhoto",
+    name: "Follow-up Radiopgraph*"
+  }
+];
 
 export default class App extends Component {
   constructor(props) {
@@ -40,13 +54,17 @@ export default class App extends Component {
       wedgeSize: WedgeSize[0],
       wedgeSizeValue: "",
       plateSize: "",
-      preOpRadiograph: "",
-      postOpRadiograph: "",
-      followUpRadiograph: "",
+      preOpComment: "",
       preOpPhoto: null,
+      postOpComment: "",
       postOpPhoto: null,
+      followUpComment: "",
       followUpPhoto: null,
-      caseInfoNotes: ""
+      caseInfoNotes: "",
+      receiveFeedback: null,
+      termsAndConditions: null,
+      reviewerFeedback: "",
+      operationRating: ""
     };
   }
   handler = (value, state) => {
@@ -180,20 +198,43 @@ export default class App extends Component {
               <div style={styles.horizontalLine} />
             </div>
           </Col>
-          <Row>
-            <Col xs={6} md={6}>
-              <h4>Pre-op Radiograph *</h4>
-              <Dropdown
-                callback={this.handler}
-                state={"preOpRadiograph"}
-                options={Options}
-                value={this.state.preOpRadiograph}
-              />
-            </Col>
-            <Col xs={6} md={6}>
-              {/*<UploadImage callback={this.handler} state={"postOpPhoto"} />*/}
-            </Col>
-          </Row>
+          {Radiographs.map(value => (
+            <Row>
+              <Col xs={6} md={6}>
+                <h4>{value.name}</h4>
+                <button type={"button"}>Browse</button>
+                <input
+                  type="textarea"
+                  style={{
+                    width: "100%",
+                    height: 100
+                  }}
+                  onChange={event =>
+                    this.handler(event.target.value, value.state)
+                  }
+                />
+              </Col>
+              <Col xs={6} md={6}>
+                {/*<UploadImage callback={this.handler} state={"postOpPhoto"} />*/}
+              </Col>
+            </Row>
+          ))}
+        </Row>
+
+        <Row>
+          <Col xs={12} md={12}>
+            <h4>Feedback *</h4>
+            <div style={styles.horizontalLineContainer}>
+              <div style={styles.horizontalLine} />
+            </div>
+          </Col>
+          <Col xs={6} md={6}>
+            <h4>Would you like to receive some feedback *</h4>
+
+          </Col>
+          <Col xs={6} md={6}>
+
+          </Col>
         </Row>
       </Grid>
     );
