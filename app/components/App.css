@@ -1,3 +1,50 @@
 .title {
     margin: 20px;
 }
+
+.checkbox {
+    display: inline-block;
+}
+
+.formContainer {
+    margin-bottom: 15px;
+}
+
+.sectionTitle {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+.photosArea {
+    margin: 0;
+    padding-top: 20px;
+}
+
+.photosAreaTitle{
+    margin-top: 30px;
+}
+
+.radiograph {
+    width: 235px;
+    height: 235px;
+    border: 2px solid #e4e4e4;
+    float: right;
+}
+
+.pageContainer {
+    padding: 0 0 50px;
+}
+
+.feedBackandRating {
+    position: relative;
+}
+
+.rating {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}
+
+input[type=textarea] {
+    border: 2px solid #e4e4e4;
+}

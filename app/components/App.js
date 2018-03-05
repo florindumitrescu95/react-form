@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { Row, Grid, Col } from "react-bootstrap";
+import { Row, Grid, Col, Button, Image } from "react-bootstrap";
 import Dropdown from "./Dropdown/Dropdown";
 // import UploadImage from "./UploadImage/UploadImage";
+import Checkbox from 'material-ui/Checkbox';
 import './App.css';
 
 const styles = {
@@ -9,9 +10,9 @@ const styles = {
     margin: "20px 0 0"
   },
   horizontalLineContainer: {
-    backgroundColor: "hsla(0, 0%, 53.3%, .4)",
+    backgroundColor: "#e4e4e4",
     height: 3,
-    marginBottom: 10
+    marginBottom: 25
   },
   horizontalLine: {
     backgroundColor: "#337ab7",
@@ -27,18 +28,17 @@ const wedges = {
 };
 const Breed = ["doggo", "shiba", "husky"];
 const Temperments = ["agitat", "fumat", "melancolic"];
-const Options = ["Browse", "Something"];
 const Radiographs = [
-  { state: "preOpComment", image: "preOpPhoto", name: "Pre-op Radiopgraph*" },
+  { state: "preOpComment", image: "preOpPhoto", name: "Pre-op" },
   {
     state: "postOpComment",
     image: "postOpPhoto",
-    name: "Post-op Radiopgraph*"
+    name: "Post-op"
   },
   {
     state: "followUpComment",
     image: "followUpPhoto",
-    name: "Follow-up Radiopgraph*"
+    name: "Follow-up"
   }
 ];
 
@@ -56,15 +56,18 @@ export default class App extends Component {
       plateSize: "",
       preOpComment: "",
       preOpPhoto: null,
+      preOpPhotoUrl: '',
       postOpComment: "",
       postOpPhoto: null,
+      postOpPhotoUrl: '',
       followUpComment: "",
       followUpPhoto: null,
+      followUpPhotoUrl: '',
       caseInfoNotes: "",
-      receiveFeedback: null,
-      termsAndConditions: null,
+      receiveFeedback: '',
+      termsAndConditions: '',
       reviewerFeedback: "",
-      operationRating: ""
+      operationRating: "",
     };
   }
   handler = (value, state) => {
@@ -74,12 +77,33 @@ export default class App extends Component {
     this.setState({ newState });
   };
 
+  handleCheckbox = name => (event) => {
+    this.setState({ [name]: event.target.checked });
+  };
+
+  handleUploadImage = (event, name) => {
+    event.preventDefault();
+
+    let reader = new FileReader();
+    let file = event.target.files[0];
+    let newState = this.state;
+    console.log(newState);
+
+    reader.onloadend = () => {
+      newState[name] = file;
+      newState[`${name}Url`] = reader.result;
+      this.setState({ newState });
+    };
+
+      reader.readAsDataURL(file);
+  };
+
   render() {
     return (
-      <Grid>
+      <Grid bsClass={'container pageContainer'}>
         <Row className="show-grid">
           <Col xs={12} md={12}>
-            <h3 style={styles.title}>Registry2</h3>
+            <h3 style={styles.title}>Registry</h3>
             <hr />
             <a href="#">Home</a>
             <span>/ Registry</span>
@@ -95,7 +119,7 @@ export default class App extends Component {
             </div>
           </Col>
           <Col xs={6} md={6} lg={6}>
-            <Row className="show-grid">
+            <Row className="show-grid formContainer">
               <Col xs={12} md={12}>
                 <h4>Breed *</h4>
                 <Dropdown
@@ -107,7 +131,7 @@ export default class App extends Component {
                 />
               </Col>
             </Row>
-            <Row className="show-grid">
+            <Row className="show-grid formContainer">
               <Col xs={6} md={6}>
                 <h4>Age(years) *</h4>
                 <input
@@ -123,7 +147,7 @@ export default class App extends Component {
                 />
               </Col>
             </Row>
-            <Row className="show-grid">
+            <Row className="show-grid formContainer">
               <Col xs={12} md={12}>
                 <h4>Temperment *</h4>
                 <Dropdown
@@ -142,7 +166,7 @@ export default class App extends Component {
               type="textarea"
               style={{
                 width: "100%",
-                height: 100
+                height: 187
               }}
               onChange={event =>
                 this.handler(event.target.value, "caseInfoNotes")
@@ -151,7 +175,7 @@ export default class App extends Component {
           </Col>
         </Row>
 
-        <Row>
+        <Row className={'show-grid sectionTitle'}>
           <Col xs={12} md={12}>
             <h4>Implants *</h4>
             <div style={styles.horizontalLineContainer}>
@@ -191,7 +215,7 @@ export default class App extends Component {
           </Col>
         </Row>
 
-        <Row>
+        <Row className={'show-grid formContainer'}>
           <Col xs={12} md={12}>
             <h4>Radiographs *</h4>
             <div style={styles.horizontalLineContainer}>
@@ -199,10 +223,17 @@ export default class App extends Component {
             </div>
           </Col>
           {Radiographs.map(value => (
-            <Row>
+            <Row className={'show-grid photosArea'}>
               <Col xs={6} md={6}>
-                <h4>{value.name}</h4>
-                <button type={"button"}>Browse</button>
+                <h4 className={'photosAreaTitle'}>{value.name} Radiograph *</h4>
+                <label for={`input${value.name}`} className={'btn btn-default'}>Browse</label>
+                <input
+                    type={'file'}
+                    onChange={(e) => this.handleUploadImage(e, value.image)}
+                    accept={'image/*'}
+                    style={{ display: 'none'}}
+                    id={`input${value.name}`} />
+                <h4>{value.name} surgical comments:</h4>
                 <input
                   type="textarea"
                   style={{
@@ -215,7 +246,12 @@ export default class App extends Component {
                 />
               </Col>
               <Col xs={6} md={6}>
-                {/*<UploadImage callback={this.handler} state={"postOpPhoto"} />*/}
+                <div className={'radiograph'}>
+                  { this.state[value.image] ?
+                      <Image src={this.state[`${value.image}Url`]} width={231} height={231} />
+                  : ''
+                  }
+                </div>
               </Col>
             </Row>
           ))}
@@ -229,11 +265,49 @@ export default class App extends Component {
             </div>
           </Col>
           <Col xs={6} md={6}>
-            <h4>Would you like to receive some feedback *</h4>
-
+            <h4 className={'checkbox'}>Would you like to receive some feedback *</h4>
+            <Checkbox
+                checked={this.state.receiveFeedback}
+                onChange={this.handleCheckbox('receiveFeedback')}
+                value='receiveFeedback'
+                color='primary'
+                classes={{
+                    default: 'checkbox'
+                }}
+            />
           </Col>
           <Col xs={6} md={6}>
+            <h4 className={'checkbox'}>I agree to the <a href={'#'}>terms and conditions</a> *</h4>
+            <Checkbox
+                checked={this.state.termsAndConditions}
+                onChange={this.handleCheckbox('termsAndConditions')}
+                value='termsAndConditions'
+                color='primary'
+                classes={{
+                  default: 'checkbox'
+                }}
+            />
+          </Col>
+        </Row>
 
+        <Row className={'feedBackandRating'}>
+          <Col xs={6} md={6}>
+            <h4>Reviewer feedback: </h4>
+            <input
+                type="textarea"
+                style={{
+                    width: "100%",
+                    height: 100
+                }}
+                onChange={event =>
+                    this.handler(event.target.value, 'reviewerFeedback')
+                }
+            />
+          </Col>
+          <Col xs={6} md={6} className={'rating'}>
+            <div className={'rateOperation'}>
+              <h4>Rate this operation</h4>
+            </div>
           </Col>
         </Row>
       </Grid>
