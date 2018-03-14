@@ -9,7 +9,7 @@ const config = {
 
   entry: [
     "react-hot-loader/patch",
-    "webpack-dev-server/client?http://localhost:8080",
+    "webpack-dev-server/client?http://localhost",
     "webpack/hot/only-dev-server",
     "./main.js",
     "./assets/scss/main.scss"
@@ -26,7 +26,8 @@ const config = {
   devServer: {
     hot: true,
     contentBase: resolve(__dirname, "app"),
-    publicPath: "/"
+    publicPath: "/",
+    port: process.env.PORT || 5000
   },
 
   module: {
@@ -125,15 +126,6 @@ const config = {
   },
 
   plugins: [
-    new webpack.LoaderOptionsPlugin({
-      test: /\.js$/,
-      options: {
-        eslint: {
-          configFile: resolve(__dirname, ".eslintrc"),
-          cache: false
-        }
-      }
-    }),
     new webpack.optimize.ModuleConcatenationPlugin(),
     new ExtractTextPlugin({
       filename: "./styles/style.css",
